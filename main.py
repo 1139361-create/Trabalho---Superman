@@ -29,7 +29,7 @@ fundoDead = pygame.transform.scale(fundoDead, (1000, 700))
 fundoStart = pygame.image.load("assets/TelaStart.png")
 
 superman = pygame.image.load("assets/superman.png")
-superman = pygame.transform.scale(superman, (116,51))
+superman = pygame.transform.scale(superman, (120,60))
 vilao = pygame.image.load("assets/Vilão.webp")
 vilao = pygame.transform.scale(vilao, (180,100))
 VilaoSound = pygame.mixer.Sound("assets/VilaoSound.mp3")
@@ -78,13 +78,13 @@ def jogar():
 
         if posicaoXPersona < 0:
             posicaoXPersona = 0
-        elif posicaoXPersona > 884:   # 1000 - 116
-            posicaoXPersona = 884
+        elif posicaoXPersona > 880:   # 1000 - 116
+            posicaoXPersona = 880
 
         if posicaoYPersona < 0:
             posicaoYPersona = 0
-        elif posicaoYPersona > 649:   # 700 - 51
-            posicaoYPersona = 649
+        elif posicaoYPersona > 640:   # 700 - 51
+            posicaoYPersona = 640
             
         posicaoXVilao = posicaoXVilao - velocidadeVilao
         if posicaoXVilao < -180:
