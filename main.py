@@ -60,16 +60,19 @@ def jogar():
     pygame.mixer.music.play(-1)
     dificuldade = 20
     obstaculos = []
+    tempo_spawn = 0
+    pause = False
 
-    for i in range(5):
+    for i in range(10):
         obstaculos.append({
             "x": random.randint(0, 900),
-            "y": -(i * 250),
+            "y": random.randint(-400, 0),
             "velocidade": random.randint(3, 8)
-            })
-        
+        })
+    
     while True:
         for evento in pygame.event.get():
+
             if evento.type == pygame.QUIT:
                 quit()
                 movimentoXPersona = 0
@@ -89,6 +92,17 @@ def jogar():
                 movimentoXPersona = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT or evento.type == pygame.KEYUP and evento.key == pygame.K_a:
                 movimentoXPersona = 0
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
+                pause = not pause
+
+        if pause:
+            texto_pause = fonteMenu.render("JOGO PAUSADO - Pressione ESPAÇO para continuar", True, branco)
+
+            tela.blit(texto_pause, (300, 350))
+
+            pygame.display.update()
+            relogio.tick(60)
+            continue
                 
         
         posicaoXPersona = posicaoXPersona + movimentoXPersona          
@@ -118,6 +132,15 @@ def jogar():
             velocidadeVilao += 1
             posicaoYVilao = random.randint(0,600)
 
+        tempo_spawn += 1
+
+        if tempo_spawn > 30:
+            obstaculos.append({
+            "x": random.randint(0, 900),
+            "y": -50,
+            "velocidade": random.randint(4, 10)
+        })
+        tempo_spawn = 0
         mover_obstaculos(obstaculos)
                             
         tela.fill(branco)
@@ -125,16 +148,16 @@ def jogar():
         player_rect = pygame.Rect(posicaoXPersona, posicaoYPersona, 120, 60)
 
         for obstaculo in obstaculos:
-    
-            meteor_rect = pygame.Rect(
-                obstaculo["x"] + 10,
-                obstaculo["y"] + 10,
-                50,
-                50
-            )
+                obstaculo["velocidade"] += 0.002
+
+                meteor_rect = pygame.Rect(
+                    obstaculo["x"] + 15,
+                    obstaculo["y"] + 15,
+                    50,
+                    50
+                )
 
         tela.blit(meteorito, (obstaculo["x"], obstaculo["y"]))
-
         if player_rect.colliderect(meteor_rect):
             escreverDados(nome, pontos)
             dead()
