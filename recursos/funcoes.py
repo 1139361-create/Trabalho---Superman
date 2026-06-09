@@ -1,5 +1,6 @@
 import os, time
 import json
+import random
 from datetime import datetime
 
 def limpar_tela():
@@ -58,3 +59,16 @@ def maior_pontuador():
             dataJogada = info[1]            
 
     return nome_maior, maior_pontos, dataJogada
+
+
+def mover_obstaculos(obstaculos):
+
+    for obstaculo in obstaculos:
+
+        obstaculo["y"] += obstaculo["velocidade"]
+
+        if obstaculo["y"] > 700:
+
+            obstaculo["y"] = random.randint(-300, -50)
+
+            obstaculo["x"] = random.randint(0, 950)

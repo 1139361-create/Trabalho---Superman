@@ -1,7 +1,9 @@
 import pygame
 import random
-from recursos.funcoes import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
 
+#Funções
+from recursos.funcoes import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
+from recursos.funcoes import mover_obstaculos
 limpar_tela()
 inicializarBancoDeDados()
 nome_maior, maior_pontos, dataJogada = maior_pontuador()
@@ -23,18 +25,25 @@ tela = pygame.display.set_mode( tamanho )
 branco = (255, 255, 255)
 preto = (0, 0, 0)
 
+#Telas
 fundo = pygame.image.load("assets/TelaFundo1000x700.png")
 fundoDead = pygame.image.load("assets/BackgroundDead.png.png")
 fundoDead = pygame.transform.scale(fundoDead, (1000, 700))
 fundoStart = pygame.image.load("assets/TelaStart.png")
 
+#Personagens e Obstáculos
 superman = pygame.image.load("assets/superman.png")
 superman = pygame.transform.scale(superman, (120,60))
 vilao = pygame.image.load("assets/Vilão.webp")
 vilao = pygame.transform.scale(vilao, (180,100))
+meteorito = pygame.image.load("assets/meteorito.png")
+meteorito = pygame.transform.scale(meteorito, (70,70))
+
+#Sons
 VilaoSound = pygame.mixer.Sound("assets/VilaoSound.mp3")
 explosaoSound = pygame.mixer.Sound("assets/explosao.wav")
 pygame.mixer.music.load("assets/esperança.mp3")
+
 fonteMenu = pygame.font.SysFont("comicsans",18)
 
 def jogar():
@@ -50,6 +59,15 @@ def jogar():
     pygame.mixer.Sound.play(VilaoSound)
     pygame.mixer.music.play(-1)
     dificuldade = 20
+    obstaculos = []
+
+    for i in range(5):
+        obstaculos.append({
+            "x": random.randint(0, 900),
+            "y": -(i * 250),
+            "velocidade": random.randint(3, 8)
+            })
+        
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -75,6 +93,12 @@ def jogar():
         
         posicaoXPersona = posicaoXPersona + movimentoXPersona          
         posicaoYPersona = posicaoYPersona + movimentoYPersona 
+        player_rect = pygame.Rect(
+            posicaoXPersona + 20,
+            posicaoYPersona + 10,
+            80,
+            40
+        )
 
         if posicaoXPersona < 0:
             posicaoXPersona = 0
@@ -93,10 +117,29 @@ def jogar():
             pontos = pontos + 1
             velocidadeVilao += 1
             posicaoYVilao = random.randint(0,600)
+
+        mover_obstaculos(obstaculos)
                             
         tela.fill(branco)
         tela.blit(fundo, (0,0) )
-        
+        player_rect = pygame.Rect(posicaoXPersona, posicaoYPersona, 120, 60)
+
+        for obstaculo in obstaculos:
+    
+            meteor_rect = pygame.Rect(
+                obstaculo["x"] + 10,
+                obstaculo["y"] + 10,
+                50,
+                50
+            )
+
+        tela.blit(meteorito, (obstaculo["x"], obstaculo["y"]))
+
+        if player_rect.colliderect(meteor_rect):
+            escreverDados(nome, pontos)
+            dead()
+            return
+            
         tela.blit(superman, (posicaoXPersona,posicaoYPersona))
         tela.blit(vilao, (posicaoXVilao, posicaoYVilao) )
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
