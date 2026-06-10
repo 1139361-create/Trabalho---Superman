@@ -2,8 +2,8 @@ import pygame
 import random
 
 #Funções
-from recursos.funcoes import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
-from recursos.funcoes import mover_obstaculos
+from recursos.trabalho import inicializarBancoDeDados, limpar_tela, escreverDados, maior_pontuador
+from recursos.trabalho import mover_obstaculos
 limpar_tela()
 inicializarBancoDeDados()
 nome_maior, maior_pontos, dataJogada = maior_pontuador()
@@ -179,8 +179,13 @@ def jogar():
         for evento in pygame.event.get():
 
             if evento.type == pygame.QUIT:
+                pygame.quit()
                 quit()
-                movimentoXPersona = 0
+
+            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
+                 pygame.quit()
+                 quit()
+
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP or evento.type == pygame.KEYDOWN and evento.key == pygame.K_w:
                 movimentoYPersona = -velocidadeMovPersona
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_DOWN or evento.type == pygame.KEYDOWN and evento.key == pygame.K_s:
