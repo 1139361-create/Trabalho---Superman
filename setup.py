@@ -3,15 +3,15 @@ import cx_Freeze
 executaveis = [ 
                cx_Freeze.Executable(
                    script="main.py", 
-                   icon="assets/icone.ico",
-                    target_name="IronManMarcao.exe"
+                   icon="base/icone.ico",
+                    target_name="SuperMan.exe"
                    ) ]
 cx_Freeze.setup(
-    name = "Iron Man",
+    name = "Super Man",
     options={
         "build_exe":{
             "packages":["pygame"],
-            "include_files":["assets","recursos"]
+            "include_files":["base","recursos"]
         }
     }, executables = executaveis
 )
