@@ -1,0 +1,5 @@
+setup.py
+Super_Man.egg-info/PKG-INFO
+Super_Man.egg-info/SOURCES.txt
+Super_Man.egg-info/dependency_links.txt
+Super_Man.egg-info/top_level.txt
