@@ -14,11 +14,11 @@ while True:
     if len(nome) > 0: 
         break
     else:
-        print("Nome Inválido!")
+        print(" Nome Inválido!")
         
 tamanho = (1000,700)
 pygame.display.set_caption("Iron Man de Pensamento Computacional")
-icone  = pygame.image.load("assets/icone.webp")
+icone  = pygame.image.load("base/icone.webp")
 pygame.display.set_icon(icone)
 relogio = pygame.time.Clock()
 tela = pygame.display.set_mode( tamanho ) 
@@ -26,30 +26,109 @@ branco = (255, 255, 255)
 preto = (0, 0, 0)
 
 #Telas
-fundo = pygame.image.load("assets/TelaFundo1000x700.png")
-fundoDead = pygame.image.load("assets/BackgroundDead.png.png")
+fundoBoasVindas = pygame.image.load("base/BoasVindas.png")
+fundo = pygame.image.load("base/TelaFundo1000x700.png")
+fundoDead = pygame.image.load("base/BackgroundDead.png.png")
 fundoDead = pygame.transform.scale(fundoDead, (1000, 700))
-fundoStart = pygame.image.load("assets/TelaStart.png")
+fundoStart = pygame.image.load("base/TelaStart.png")
 
 #Personagens e Obstáculos
-superman = pygame.image.load("assets/superman.png")
+satelite = pygame.image.load("base/satelite.png")
+satelite = pygame.transform.scale(satelite, (80, 40))
+superman = pygame.image.load("base/superman.png")
 superman = pygame.transform.scale(superman, (120,60))
-vilao = pygame.image.load("assets/Vilão.webp")
+vilao = pygame.image.load("base/Vilão.webp")
 vilao = pygame.transform.scale(vilao, (180,100))
-meteorito = pygame.image.load("assets/meteorito.png")
+meteorito = pygame.image.load("base/meteorito.png")
 meteorito = pygame.transform.scale(meteorito, (70,70))
 
 #Sons
-VilaoSound = pygame.mixer.Sound("assets/VilaoSound.mp3")
-explosaoSound = pygame.mixer.Sound("assets/explosao.wav")
-pygame.mixer.music.load("assets/esperança.mp3")
+VilaoSound = pygame.mixer.Sound("base/VilaoSound.mp3")
+explosaoSound = pygame.mixer.Sound("base/explosao.wav")
+pygame.mixer.music.load("base/esperança.mp3")
 
 fonteMenu = pygame.font.SysFont("comicsans",18)
 
+def boas_vindas():
+    larguraBotao = 200
+    alturaBotao = 50
+
+    while True:
+        for evento in pygame.event.get():
+
+            if evento.type == pygame.QUIT:
+                quit()
+
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if startButton.collidepoint(evento.pos):
+                    jogar()
+                    return
+
+        tela.blit(fundoBoasVindas, (0,0))
+
+        titulo = fonteMenu.render(
+            f"Bem-vindo, {nome}!",
+            True,
+            branco
+        )
+        tela.blit(titulo, (50, 50))
+
+        explicacao1 = fonteMenu.render(
+            "Use W/S ou as setas ↑ ↓ para mover o Superman.",
+            True,
+            branco
+        )
+        tela.blit(explicacao1, (50, 120))   
+
+        explicacao2 = fonteMenu.render(
+            "Desvie dos meteoritos e do vilao, cada vez desviado o vilão aumenta sua velocidade. Cuidado!!",
+            True,
+            branco
+        )
+        tela.blit(explicacao2, (50, 150))
+
+        explicacao3 = fonteMenu.render(
+            "Quanto mais tempo sobreviver, mais pontos ganha.",
+            True,
+            branco
+        )
+        tela.blit(explicacao3, (50, 180))
+
+        recorde = fonteMenu.render(
+            f"Recorde: {nome_maior} - {maior_pontos} pts",
+            True,
+            branco
+        )
+        tela.blit(recorde, (50, 250))
+
+        data = fonteMenu.render(
+            f"Data: {dataJogada}",
+            True,
+            branco
+        )
+        tela.blit(data, (50, 280))
+
+        startButton = pygame.draw.rect(
+            tela,
+            branco,
+            (350, 500, larguraBotao, alturaBotao),
+            border_radius=15
+        )
+
+        textoBotao = fonteMenu.render(
+            "INICIAR PARTIDA",
+            True,
+            preto
+        )
+
+        tela.blit(textoBotao, (380, 515))
+
+        pygame.display.update()
+        relogio.tick(60)
+
 def jogar():
-    posicaoXPersona = 0
+    posicaoXPersona = 440
     posicaoYPersona = 60
-    movimentoXPersona  = 0
     movimentoYPersona  = 0
     velocidadeMovPersona = 5
     posicaoXVilao = 1000
@@ -61,13 +140,39 @@ def jogar():
     dificuldade = 20
     obstaculos = []
     tempo_spawn = 0
+
+    #Sol
+    sol_x = 900
+    sol_y = 80
+    sol_raio = 40
+    sol_crescendo = True
+    sol_raio_min = 25
+    sol_raio_max = 60
+
+    # Objetos decorativo
+    satelite_x = random.randint(0, 920)
+    satelite_y = random.randint(0, 660)
+    satelite_vel_x = random.choice([-2, -1, 1, 2])
+    satelite_vel_y = random.choice([-2, -1, 1, 2])
+    contador_mudanca = 0
     pause = False
 
-    for i in range(10):
+
+    texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
+    tela.blit(texto, (700,15))
+
+    textoPause = fonteMenu.render(
+        "Press Space to Pause Game",
+        True,
+        branco
+    )
+    tela.blit(textoPause, (10, 675))
+
+    for i in range(3):
         obstaculos.append({
-            "x": random.randint(0, 900),
-            "y": random.randint(-400, 0),
-            "velocidade": random.randint(3, 8)
+            "x": random.randint(-800, -70),
+            "y": random.randint(0, 630),
+            "velocidade": random.randint(4, 8)
         })
     
     while True:
@@ -84,14 +189,6 @@ def jogar():
                 movimentoYPersona = 0
             elif evento.type == pygame.KEYUP and evento.key == pygame.K_DOWN or evento.type == pygame.KEYUP and evento.key == pygame.K_s:
                 movimentoYPersona = 0
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RIGHT or evento.type == pygame.KEYDOWN and evento.key == pygame.K_d:
-                movimentoXPersona = velocidadeMovPersona
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_LEFT or evento.type == pygame.KEYDOWN and evento.key == pygame.K_a:
-                movimentoXPersona = -velocidadeMovPersona
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_RIGHT or evento.type == pygame.KEYUP and evento.key == pygame.K_d:
-                movimentoXPersona = 0
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT or evento.type == pygame.KEYUP and evento.key == pygame.K_a:
-                movimentoXPersona = 0
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
                 pause = not pause
 
@@ -104,8 +201,7 @@ def jogar():
             relogio.tick(60)
             continue
                 
-        
-        posicaoXPersona = posicaoXPersona + movimentoXPersona          
+                  
         posicaoYPersona = posicaoYPersona + movimentoYPersona 
         player_rect = pygame.Rect(
             posicaoXPersona + 20,
@@ -114,10 +210,6 @@ def jogar():
             40
         )
 
-        if posicaoXPersona < 0:
-            posicaoXPersona = 0
-        elif posicaoXPersona > 880:   # 1000 - 116
-            posicaoXPersona = 880
 
         if posicaoYPersona < 0:
             posicaoYPersona = 0
@@ -132,32 +224,50 @@ def jogar():
             velocidadeVilao += 1
             posicaoYVilao = random.randint(0,600)
 
-        tempo_spawn += 1
-
-        if tempo_spawn > 30:
-            obstaculos.append({
-            "x": random.randint(0, 900),
-            "y": -50,
-            "velocidade": random.randint(4, 10)
-        })
-        tempo_spawn = 0
         mover_obstaculos(obstaculos)
-                            
+
         tela.fill(branco)
-        tela.blit(fundo, (0,0) )
+        tela.blit(fundo, (0,0)) 
+          
+        # Animação do sol
+        if sol_crescendo:
+            sol_raio += 0.7
+            if sol_raio >= 60:
+             sol_crescendo = False
+        else:
+            sol_raio -= 0.7
+            if sol_raio <= 25:
+                sol_crescendo = True
+
+        pygame.draw.circle(
+            tela,
+            (255, 255, 0),  # amarelo
+            (sol_x, sol_y),
+            int(sol_raio)
+        )
+
+        tela.blit(satelite, (satelite_x, satelite_y))               
         player_rect = pygame.Rect(posicaoXPersona, posicaoYPersona, 120, 60)
 
         for obstaculo in obstaculos:
-                obstaculo["velocidade"] += 0.002
 
-                meteor_rect = pygame.Rect(
-                    obstaculo["x"] + 15,
-                    obstaculo["y"] + 15,
-                    50,
-                    50
-                )
+            obstaculo["x"] += obstaculo["velocidade"]
+
+        if obstaculo["x"] > 1000:
+                obstaculo["x"] = -70
+                obstaculo["y"] = random.randint(0, 630)
+
+        obstaculo["velocidade"] += 0.002
+
+        meteor_rect = pygame.Rect(
+            obstaculo["x"] + 15,
+            obstaculo["y"] + 15,
+            50,
+            50
+        )
 
         tela.blit(meteorito, (obstaculo["x"], obstaculo["y"]))
+
         if player_rect.colliderect(meteor_rect):
             escreverDados(nome, pontos)
             dead()
@@ -165,6 +275,13 @@ def jogar():
             
         tela.blit(superman, (posicaoXPersona,posicaoYPersona))
         tela.blit(vilao, (posicaoXVilao, posicaoYVilao) )
+        textoPause = fonteMenu.render(
+            "Pressione ESPACO para pausar",
+            True,
+            branco
+        )
+
+        tela.blit(textoPause, (10, 670))
         texto = fonteMenu.render("Pontos: "+str(pontos), True, branco)
         tela.blit(texto, (700,15))
             
@@ -183,7 +300,21 @@ def jogar():
         else:
             print("Ainda Vivo")
         
-        
+        contador_mudanca += 1
+
+        if contador_mudanca >= 60:
+            satelite_vel_x = random.choice([-2, -1, 1, 2])
+            satelite_vel_y = random.choice([-2, -1, 1, 2])
+            contador_mudanca = 0
+
+        satelite_x += satelite_vel_x
+        satelite_y += satelite_vel_y
+
+        if satelite_x < 0 or satelite_x > 920:
+            satelite_vel_x *= -1
+
+        if satelite_y < 0 or satelite_y > 660:
+            satelite_vel_y *= -1
         
         pygame.display.update()
         relogio.tick(60)
@@ -249,6 +380,7 @@ def start():
     alturaButtonStart  = 40
     larguraButtonQuit = 150
     alturaButtonQuit  = 40
+
     while True:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -276,7 +408,7 @@ def start():
                     quit()
             
         tela.fill(branco)
-        tela.blit(fundoStart, (0,0))
+        tela.blit(fundoBoasVindas, (0,0))
         startButton = pygame.draw.rect(tela, branco, (10,10, larguraButtonStart, alturaButtonStart), border_radius=15)
         startTexto = fonteMenu.render("Iniciar Game", True, preto)
         tela.blit(startTexto, (25,12))
@@ -286,9 +418,8 @@ def start():
         tela.blit(quitTexto, (25,62))
         texto = fonteMenu.render(f"The Best - {nome_maior} - {maior_pontos} - { dataJogada} ", True, branco)
         tela.blit(texto, (480,15))
-        
 
-        pygame.display.update()
-        relogio.tick(60)
+pygame.display.update()
+relogio.tick(60)
            
-start()
+boas_vindas()
