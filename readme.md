@@ -15,3 +15,5 @@ Foi utilizado as seguintes funções:
 * Áudio Digital (efeitos sonoros e música de fundo)
 * Interface Gráfica para Jogos 2D
 * Animações e Movimentação de Objetos em Tempo Real
+
+Contribuição realizada por João Isaque.
